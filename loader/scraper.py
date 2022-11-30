@@ -12,8 +12,9 @@ load_dotenv()
 
 
 BASE_URL = "https://premium.pff.com/nfl/games/"
-YEARS = [2022]
-WEEKS = [5]
+YEARS = [2017]
+WEEKS = [i for i in range(1, 18)]
+# WEEKS = [i for i in range(1, 3)]
 PFF_LOGGED_IN = False
 
 
@@ -21,11 +22,43 @@ def get_url(base_url: str, year: int, week: int, team: str, unit: str):
     return f"{base_url}{year}/{week}/{team}/{unit}/"
 
 
-class Team(Enum):
-    CLE = "cleveland-browns"
-    DAL = "dallas-cowboys"
-    LAR = "los-angeles-rams"
-    SF = "san-francisco-49ers"
+TEAMS = {
+    "ARI": {"full_dash": "arizona-cardinals", "mascot": "cardinals", "abbreviation": "ARI"},
+    "ATL": {"full_dash": "atlanta-falcons", "mascot": "falcons", "abbreviation": "ATL"},
+    "BAL": {"full_dash": "baltimore-ravens", "mascot": "ravens", "abbreviation": "BAL"},
+    "BUF": {"full_dash": "buffalo-bills", "mascot": "bills", "abbreviation": "BUF"},
+    "CAR": {"full_dash": "carolina-panthers", "mascot": "panthers", "abbreviation": "CAR"},
+    "CHI": {"full_dash": "chicago-bears", "mascot": "bears", "abbreviation": "CHI"},
+    "CIN": {"full_dash": "cincinnati-bengals", "mascot": "bengals", "abbreviation": "CIN"},
+    "CLE": {"full_dash": "cleveland-browns", "mascot": "browns", "abbreviation": "CLE"},
+    "DAL": {"full_dash": "dallas-cowboys", "mascot": "cowboys", "abbreviation": "DAL"},
+    "DEN": {"full_dash": "denver-broncos", "mascot": "broncos", "abbreviation": "DEN"},
+    "DET": {"full_dash": "detroit-lions", "mascot": "lions", "abbreviation": "DET"},
+    "GB": {"full_dash": "green-bay-packers", "mascot": "packers", "abbreviation": "GB"},
+    "HOU": {"full_dash": "houston-texans", "mascot": "texans", "abbreviation": "HOU"},
+    "IND": {"full_dash": "indianapolis-colts", "mascot": "colts", "abbreviation": "IND"},
+    "JAC": {"full_dash": "jacksonville-jaguars", "mascot": "jaguars", "abbreviation": "JAC"},
+    "KC": {"full_dash": "kansas-city-chiefs", "mascot": "chiefs", "abbreviation": "KC"},
+    # "LV": {"full_dash": "las-vegas-raiders", "mascot": "raiders", "abbreviation": "LV"},
+    "OAK": {"full_dash": "oakland-raiders", "mascot": "raiders", "abbreviation": "OAK"},
+    "LAC": {"full_dash": "los-angeles-chargers", "mascot": "chargers", "abbreviation": "LAC"},
+    "LAR": {"full_dash": "los-angeles-rams", "mascot": "rams", "abbreviation": "LAR"},
+    "MIA": {"full_dash": "miami-dolphins", "mascot": "dolphins", "abbreviation": "MIA"},
+    "MIN": {"full_dash": "minnesota-vikings", "mascot": "vikings", "abbreviation": "MIN"},
+    "NE": {"full_dash": "new-england-patriots", "mascot": "patriots", "abbreviation": "NE"},
+    "NO": {"full_dash": "new-orleans-saints", "mascot": "saints", "abbreviation": "NO"},
+    "NYG": {"full_dash": "new-york-giants", "mascot": "giants", "abbreviation": "NYG"},
+    "NYJ": {"full_dash": "new-york-jets", "mascot": "jets", "abbreviation": "NYJ"},
+    "PHI": {"full_dash": "philadelphia-eagles", "mascot": "eagles", "abbreviation": "PHI"},
+    "PIT": {"full_dash": "pittsburgh-steelers", "mascot": "steelers", "abbreviation": "PIT"},
+    "SF": {"full_dash": "san-francisco-49ers", "mascot": "49ers", "abbreviation": "SF"},
+    "SEA": {"full_dash": "seattle-seahawks", "mascot": "seahawks", "abbreviation": "SEA"},
+    "TB": {"full_dash": "tampa-bay-buccaneers", "mascot": "buccaneers", "abbreviation": "TB"},
+    "TEN": {"full_dash": "tennessee-titans", "mascot": "titans", "abbreviation": "TEN"},
+    # "WAS": {"full_dash": "washington-commanders", "mascot": "commanders", "abbreviation": "WAS"},
+    # "WAS": {"full_dash": "washington-football-team", "mascot": "washington", "abbreviation": "WAS"},
+    "WAS": {"full_dash": "washington-redskins", "mascot": "redskins", "abbreviation": "WAS"},
+}
 
 
 class Unit(Enum):
@@ -35,12 +68,13 @@ class Unit(Enum):
 
 
 class TeamGameData:
-    def __init__(self, team: Team):
-        self.team = team.name
+    def __init__(self, team: dict, year: int, week: int):
+        self.week = week
+        self.year = year
+        self.team = team
         self.offense = self._create_offense()
         self.defense = self._create_defense()
         self.special_teams = self._create_special_teams()
-        self.headers = None
 
     @staticmethod
     def _create_offense() -> dict:
@@ -89,28 +123,29 @@ class TeamGameData:
         new_grade = ((previous_grade[0] * previous_grade[1]) + (grade * plays)) / (previous_grade[1] + plays)
         unit[position] = [new_grade, previous_grade[1] + plays]
 
-    def get_headers(self):
-        headers = ["TEAM"]
-        offense = [key for key in self.offense]
-        defense = [key for key in self.defense]
-        st = [key for key in self.special_teams]
+    @staticmethod
+    def get_headers():
+        headers = ["YEAR", "WEEK", "TEAM"]
+        offense = [key for key in TeamGameData._create_offense()]
+        defense = [key for key in TeamGameData._create_defense()]
+        st = [key for key in TeamGameData._create_special_teams()]
         headers += offense + defense + st
 
         return headers
 
-    def get_rows(self):
-        rows = [self.team]
+    def get_row(self):
+        row = [self.year, self.week, self.team["abbreviation"]]
         for value in self.offense.values():
-            rows.append(value[0])
+            row.append(value[0])
         for value in self.defense.values():
-            rows.append(value[0])
+            row.append(value[0])
         for value in self.special_teams.values():
-            rows.append(value[0])
+            row.append(value[0])
 
-        return rows
+        return row
 
     def __str__(self):
-        return f"{self.team}"
+        return f"{self.team['full_dash']}"
 
 
 def login_pff(browser: WebDriver):
@@ -120,20 +155,20 @@ def login_pff(browser: WebDriver):
 
     auth_url = "https://auth.pff.com/"
     browser.get(auth_url)
-    time.sleep(2)  # give it time to load
+    time.sleep(3)  # give it time to load
     username = os.getenv("PFF_USER")
     password = os.getenv("PFF_PASS")
 
     browser.find_element(value="login-form_email").send_keys(username)
     browser.find_element(value="login-form_password").send_keys(password)
     browser.find_element(value="sign-in").click()
-    time.sleep(2)
+    time.sleep(3)
 
     browser.get("https://premium.pff.com/")
-    time.sleep(2)
+    time.sleep(3)
 
     browser.find_element(by=by.By.CLASS_NAME, value="g-btn--green").click()
-    time.sleep(2)
+    time.sleep(3)
 
     PFF_LOGGED_IN = True
 
@@ -143,29 +178,31 @@ def scrape_pff(browser: WebDriver, filename: str):
 
     base_url = BASE_URL
 
-    headers = TeamGameData(Team.LAR).get_headers()
+    headers = TeamGameData.get_headers()
     with open(filename, 'w', newline='') as csvfile:
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow(headers)
 
         for year in YEARS:
             for week in WEEKS:
-                for team in Team:
-                    team_game_data = TeamGameData(team)
+                for team in TEAMS:
+                    team_game_data = TeamGameData(team=TEAMS[team], year=year, week=week)
                     for unit in Unit:
                         url = get_url(
                             base_url=base_url,
                             year=year,
                             week=week,
-                            team=str(team.value),
+                            team=str(team_game_data.team["full_dash"]),
                             unit=str(unit.value),
                         )
                         # print(f"{url =}")
                         browser.get(url)
-                        time.sleep(2)  # give it time to load
+                        time.sleep(3)  # give it time to load
                         html = browser.page_source
                         soup = BeautifulSoup(html, "html.parser")
                         all_grades_raw = soup.find_all(class_="kyber-table-body__scrolling-rows-container")
+                        if not all_grades_raw:
+                            continue  # no team data, probably on bye
                         rows_raw = all_grades_raw[0].find_all(class_="kyber-table-body__row")
                         for row in rows_raw:
                             position_and_plays = row.find_all(class_="kyber-table-body-cell")
@@ -240,16 +277,75 @@ def scrape_pff(browser: WebDriver, filename: str):
                                 else:
                                     team_game_data.special_teams[position] = [grade, plays]
 
-                    # week
-                    # year
-                    rows = team_game_data.get_rows()
-                    csvwriter.writerow(rows)
+                    row = team_game_data.get_row()
+                    csvwriter.writerow(row)
+
+                    # if team_game_data.team == "CLE" or team_game_data.team == "cleveland-browns":
+                    #     return
+
+
+class GameResultsData:
+    def __init__(self, year: int, week: int):
+        self.week = week
+        self.year = year
+        self.home_team = ""
+        self.away_team = ""
+        self.home_score = -1
+        self.away_score = -1
+
+    def get_row(self):
+        row = [self.year, self.week, self.home_team, self.away_team, self.home_score, self.away_score]
+
+        return row
+
+    @staticmethod
+    def get_headers():
+        headers = ["YEAR", "WEEK", "HOME_TEAM", "AWAY_TEAM", "HOME_SCORE", "AWAY_SCORE"]
+
+        return headers
+
+
+def scrape_espn_results(browser: WebDriver, filename: str):
+    base_url = f"https://www.espn.com/nfl/scoreboard/_/"
+    teams = {TEAMS[abbr]["mascot"]: abbr for abbr in TEAMS}
+
+    headers = GameResultsData.get_headers()
+    with open(filename, 'w', newline='') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csvwriter.writerow(headers)
+
+        for year in YEARS:
+            for week in WEEKS:
+                url = f"{base_url}week/{week}/year/{year}/"
+                browser.get(url)
+                time.sleep(2)  # give it time to load
+                html = browser.page_source
+                soup = BeautifulSoup(html, "html.parser")
+                all_game_results = soup.find_all(class_="ScoreboardScoreCell__Competitors")
+                if not all_game_results:
+                    continue  # messed up
+                for game_result in all_game_results:
+                    result = GameResultsData(year=year, week=week)
+                    for idx, team in enumerate(game_result):  # team 0 is away, team 1 is home
+                        if idx == 0:
+                            away_team = team.find_all(class_="ScoreCell__TeamName")[0].string
+                            result.away_team = teams[str(away_team).lower()]
+                            result.away_score = int(team.find_all(class_="ScoreCell__Score")[0].string)
+                        elif idx == 1:
+                            home_team = team.find_all(class_="ScoreCell__TeamName")[0].string
+                            result.home_team = teams[str(home_team).lower()]
+                            result.home_score = int(team.find_all(class_="ScoreCell__Score")[0].string)
+
+                    row = result.get_row()
+                    csvwriter.writerow(row)
 
 
 def main():
     browser = webdriver.Chrome(r"C:\WebDriver_\chromedriver.exe")
 
-    scrape_pff(browser, "team_grades.csv")
+    # scrape_pff(browser, "../data/team_grades.csv")
+
+    scrape_espn_results(browser, "../data/results.csv")
 
     browser.close()
 
