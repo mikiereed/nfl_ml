@@ -12,7 +12,7 @@ load_dotenv()
 
 
 BASE_URL = "https://premium.pff.com/nfl/games/"
-YEARS = [2017]
+YEARS = [2005]
 WEEKS = [i for i in range(1, 18)]
 # WEEKS = [i for i in range(1, 3)]
 PFF_LOGGED_IN = False
@@ -41,8 +41,10 @@ TEAMS = {
     "KC": {"full_dash": "kansas-city-chiefs", "mascot": "chiefs", "abbreviation": "KC"},
     # "LV": {"full_dash": "las-vegas-raiders", "mascot": "raiders", "abbreviation": "LV"},
     "OAK": {"full_dash": "oakland-raiders", "mascot": "raiders", "abbreviation": "OAK"},
-    "LAC": {"full_dash": "los-angeles-chargers", "mascot": "chargers", "abbreviation": "LAC"},
-    "LAR": {"full_dash": "los-angeles-rams", "mascot": "rams", "abbreviation": "LAR"},
+    # "LAC": {"full_dash": "los-angeles-chargers", "mascot": "chargers", "abbreviation": "LAC"},
+    "SD": {"full_dash": "san-diego-chargers", "mascot": "chargers", "abbreviation": "SD"},
+    # "LAR": {"full_dash": "los-angeles-rams", "mascot": "rams", "abbreviation": "LAR"},
+    "STL": {"full_dash": "st-louis-rams", "mascot": "rams", "abbreviation": "STL"},
     "MIA": {"full_dash": "miami-dolphins", "mascot": "dolphins", "abbreviation": "MIA"},
     "MIN": {"full_dash": "minnesota-vikings", "mascot": "vikings", "abbreviation": "MIN"},
     "NE": {"full_dash": "new-england-patriots", "mascot": "patriots", "abbreviation": "NE"},
@@ -174,6 +176,7 @@ def login_pff(browser: WebDriver):
 
 
 def scrape_pff(browser: WebDriver, filename: str):
+    assert len(TEAMS) == 32
     login_pff(browser)
 
     base_url = BASE_URL
@@ -307,6 +310,7 @@ class GameResultsData:
 
 def scrape_espn_results(browser: WebDriver, filename: str):
     base_url = f"https://www.espn.com/nfl/scoreboard/_/"
+    assert len(TEAMS) == 32
     teams = {TEAMS[abbr]["mascot"]: abbr for abbr in TEAMS}
 
     headers = GameResultsData.get_headers()
@@ -328,23 +332,29 @@ def scrape_espn_results(browser: WebDriver, filename: str):
                     result = GameResultsData(year=year, week=week)
                     for idx, team in enumerate(game_result):  # team 0 is away, team 1 is home
                         if idx == 0:
-                            away_team = team.find_all(class_="ScoreCell__TeamName")[0].string
-                            result.away_team = teams[str(away_team).lower()]
-                            result.away_score = int(team.find_all(class_="ScoreCell__Score")[0].string)
+                            result.away_team, result.away_score = _get_team_and_score(team, teams)
                         elif idx == 1:
-                            home_team = team.find_all(class_="ScoreCell__TeamName")[0].string
-                            result.home_team = teams[str(home_team).lower()]
-                            result.home_score = int(team.find_all(class_="ScoreCell__Score")[0].string)
+                            result.home_team, result.home_score = _get_team_and_score(team, teams)
 
-                    row = result.get_row()
-                    csvwriter.writerow(row)
+                    if result.away_score != -1 and result.home_score != -1:
+                        row = result.get_row()
+                        csvwriter.writerow(row)
+
+
+def _get_team_and_score(team, teams: dict) -> (str, int):
+    team_name = team.find_all(class_="ScoreCell__TeamName")[0].string
+    team_abbr = teams[str(team_name).lower()]
+    if len(team.find_all(class_="ScoreCell__Score")) == 0:
+        return team_abbr, -1
+    score = int(team.find_all(class_="ScoreCell__Score")[0].string)
+
+    return team_abbr, score
 
 
 def main():
     browser = webdriver.Chrome(r"C:\WebDriver_\chromedriver.exe")
 
-    # scrape_pff(browser, "../data/team_grades.csv")
-
+    scrape_pff(browser, "../data/team_grades.csv")
     scrape_espn_results(browser, "../data/results.csv")
 
     browser.close()
