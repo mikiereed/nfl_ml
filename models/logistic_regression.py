@@ -1,10 +1,15 @@
-from model_utils import load_csv, plot
+import numpy as np
+
+from model_utils import load_csv, change_zeros_to_mean, normalize_features
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 
 
 def logistic_regression_model(data_file: str):
     x, y = load_csv(csv_path=data_file, label_col="y", add_intercept=True)
+    change_zeros_to_mean(x)
+    normalize_features(x)
+
     scores = []
     for i in range(20):
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.20, random_state=i)
@@ -21,6 +26,7 @@ def logistic_regression_model(data_file: str):
 
         score = logistic_regression.score(x_test, y_test)
         print(f"{i}: {score}")
+        print(theta)
         scores.append(score)
 
     print(f"average: {sum(scores) / 20}")

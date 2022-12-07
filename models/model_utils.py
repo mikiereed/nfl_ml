@@ -6,7 +6,8 @@ import json
 
 
 def add_intercept_fn(x):
-    """Add intercept to matrix x.
+    """Code from CS 229 pSet Utils
+    Add intercept to matrix x.
 
     Args:
         x: 2D NumPy array.
@@ -22,7 +23,8 @@ def add_intercept_fn(x):
 
 
 def load_csv(csv_path, label_col='y', add_intercept=False):
-    """Load dataset from a CSV file.
+    """Code from CS 229 pSet Utils
+    Load dataset from a CSV file.
 
     Args:
          csv_path: Path to CSV file containing dataset.
@@ -54,7 +56,8 @@ def load_csv(csv_path, label_col='y', add_intercept=False):
 
 
 def plot(x, y, theta, save_path, correction=1.0):
-    """Plot dataset and fitted logistic regression parameters.
+    """ Code from CS 229 pSet Utils
+    Plot dataset and fitted logistic regression parameters.
 
     Args:
         x: Matrix of training examples, one per row.
@@ -77,3 +80,20 @@ def plot(x, y, theta, save_path, correction=1.0):
     plt.xlabel('x1')
     plt.ylabel('x2')
     plt.savefig(save_path)
+
+
+def change_zeros_to_mean(x: np.array):
+    for column in range(x.shape[1]):
+        mean = np.sum(x[:, column:column + 1]) / np.count_nonzero(x[:, column:column + 1])
+        x[:, column:column + 1] = np.where(x[:, column:column + 1] == 0, mean, x[:, column:column + 1])
+        assert round(mean, 3) == round(np.mean(x[:, column: column + 1]), 3)
+
+
+def normalize_features(x: np.array):
+    for column in range(x.shape[1]):
+        std_dev = np.std(x[:, column:column + 1])
+        mean = np.mean(x[:, column:column + 1])
+        if std_dev:
+            x[:, column:column + 1] = (x[:, column:column + 1] - mean) / std_dev
+        else:
+            x[:, column:column + 1] = (x[:, column:column + 1] - mean)

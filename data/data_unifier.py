@@ -1,4 +1,5 @@
 import csv
+import os
 
 
 def unify_data() -> None:
@@ -6,8 +7,10 @@ def unify_data() -> None:
     team_grades = dict()
     x = []
     y = []
-    for i in range(6, 22):
-        with open(f"team_grades_{str(i).zfill(2)}.csv", "r") as f:
+    team_grades_dir = "./team_grades/"
+    for team_grades_file in os.listdir(team_grades_dir):
+    # for i in range(6, 22):
+        with open(f"{team_grades_dir}{team_grades_file}", "r") as f:
             lines = f.readlines()
             for idx, team_grade in enumerate(lines):
                 if idx == 0:
@@ -16,7 +19,9 @@ def unify_data() -> None:
                 team_grades[(int(team_grade[0]), int(team_grade[1]), team_grade[2])] = team_grade[3:]
 
         # combine teams from results
-        with open(f"results_{str(i).zfill(2)}.csv", "r") as f:
+    results_dir = "./results/"
+    for results_file in os.listdir(results_dir):
+        with open(f"{results_dir}{results_file}", "r") as f:
             lines = f.readlines()
             for idx, result in enumerate(lines):
                 if idx == 0:
