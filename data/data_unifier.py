@@ -7,7 +7,8 @@ def unify_data() -> None:
     team_grades = dict()
     x = []
     y = []
-    team_grades_dir = "./team_grades/"
+    # team_grades_dir = "./team_grades/"
+    team_grades_dir = "./FINAL_TEST_team_grades/"
     for team_grades_file in os.listdir(team_grades_dir):
     # for i in range(6, 22):
         with open(f"{team_grades_dir}{team_grades_file}", "r") as f:
@@ -18,8 +19,9 @@ def unify_data() -> None:
                 team_grade = team_grade.replace("\n", "").split(",")
                 team_grades[(int(team_grade[0]), int(team_grade[1]), team_grade[2])] = team_grade[3:]
 
-        # combine teams from results
-    results_dir = "./results/"
+    # combine teams from results
+    # results_dir = "./results/"
+    results_dir = "./FINAL_TEST_results/"
     for results_file in os.listdir(results_dir):
         with open(f"{results_dir}{results_file}", "r") as f:
             lines = f.readlines()
@@ -33,7 +35,8 @@ def unify_data() -> None:
                 home_win = 1 if int(result[4]) > int(result[5]) else 0
                 y.append(home_win)
 
-    with open("data.csv", "w", newline='') as f:
+    # with open("data.csv", "w", newline='') as f:
+    with open("FINAL_TEST_data.csv", "w", newline='') as f:
         features = len(x[0])
         headers = [f"x_{i}" for i in range(features)]
         headers.append("y")

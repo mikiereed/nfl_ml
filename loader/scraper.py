@@ -12,9 +12,9 @@ load_dotenv()
 
 
 BASE_URL = "https://premium.pff.com/nfl/games/"
-YEARS = [2005]
-WEEKS = [i for i in range(1, 18)]
-# WEEKS = [i for i in range(1, 3)]
+YEARS = [2022]
+WEEKS = [i for i in range(1, 14)]
+# WEEKS = [i for i in range(1, 2)]
 PFF_LOGGED_IN = False
 
 
@@ -39,12 +39,12 @@ TEAMS = {
     "IND": {"full_dash": "indianapolis-colts", "mascot": "colts", "abbreviation": "IND"},
     "JAC": {"full_dash": "jacksonville-jaguars", "mascot": "jaguars", "abbreviation": "JAC"},
     "KC": {"full_dash": "kansas-city-chiefs", "mascot": "chiefs", "abbreviation": "KC"},
-    # "LV": {"full_dash": "las-vegas-raiders", "mascot": "raiders", "abbreviation": "LV"},
-    "OAK": {"full_dash": "oakland-raiders", "mascot": "raiders", "abbreviation": "OAK"},
-    # "LAC": {"full_dash": "los-angeles-chargers", "mascot": "chargers", "abbreviation": "LAC"},
-    "SD": {"full_dash": "san-diego-chargers", "mascot": "chargers", "abbreviation": "SD"},
-    # "LAR": {"full_dash": "los-angeles-rams", "mascot": "rams", "abbreviation": "LAR"},
-    "STL": {"full_dash": "st-louis-rams", "mascot": "rams", "abbreviation": "STL"},
+    "LV": {"full_dash": "las-vegas-raiders", "mascot": "raiders", "abbreviation": "LV"},
+    # "OAK": {"full_dash": "oakland-raiders", "mascot": "raiders", "abbreviation": "OAK"},
+    "LAC": {"full_dash": "los-angeles-chargers", "mascot": "chargers", "abbreviation": "LAC"},
+    # "SD": {"full_dash": "san-diego-chargers", "mascot": "chargers", "abbreviation": "SD"},
+    "LAR": {"full_dash": "los-angeles-rams", "mascot": "rams", "abbreviation": "LAR"},
+    # "STL": {"full_dash": "st-louis-rams", "mascot": "rams", "abbreviation": "STL"},
     "MIA": {"full_dash": "miami-dolphins", "mascot": "dolphins", "abbreviation": "MIA"},
     "MIN": {"full_dash": "minnesota-vikings", "mascot": "vikings", "abbreviation": "MIN"},
     "NE": {"full_dash": "new-england-patriots", "mascot": "patriots", "abbreviation": "NE"},
@@ -57,9 +57,9 @@ TEAMS = {
     "SEA": {"full_dash": "seattle-seahawks", "mascot": "seahawks", "abbreviation": "SEA"},
     "TB": {"full_dash": "tampa-bay-buccaneers", "mascot": "buccaneers", "abbreviation": "TB"},
     "TEN": {"full_dash": "tennessee-titans", "mascot": "titans", "abbreviation": "TEN"},
-    # "WAS": {"full_dash": "washington-commanders", "mascot": "commanders", "abbreviation": "WAS"},
+    "WAS": {"full_dash": "washington-commanders", "mascot": "commanders", "abbreviation": "WAS"},
     # "WAS": {"full_dash": "washington-football-team", "mascot": "washington", "abbreviation": "WAS"},
-    "WAS": {"full_dash": "washington-redskins", "mascot": "redskins", "abbreviation": "WAS"},
+    # "WAS": {"full_dash": "washington-redskins", "mascot": "redskins", "abbreviation": "WAS"},
 }
 
 
