@@ -15,8 +15,11 @@ def logistic_regression_model(data_file: str):
     x, y = load_csv(csv_path=data_file, label_col="y", add_intercept=False)
     change_zeros_to_mean(x)
 
-    scores = []
-    trials = 5
+    trials = 20
+    accuracy_scores = []
+    f1_scores = []
+    precision_scores = []
+    recall_scores = []
     for i in range(trials):
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.20, random_state=i)
         scaler = StandardScaler()
@@ -26,14 +29,20 @@ def logistic_regression_model(data_file: str):
         lr = LogisticRegression(C=0.001, penalty='l2', solver='liblinear',)
         lr.fit(x_train, y_train)
         y_pred = lr.predict(x_test)
-        accuracy = metrics.accuracy_score(y_test, y_pred)
-        f1 = metrics.f1_score(y_test, y_pred)
-        scores.append(accuracy)
-        print(f"accuracy: {accuracy}")
-        print(f"f1: {f1}")
-        # print(lr.coef_)
+        accuracy_scores.append(metrics.accuracy_score(y_test, y_pred))
+        f1_scores.append(metrics.f1_score(y_test, y_pred))
+        precision_scores.append(metrics.precision_score(y_test, y_pred))
+        recall_scores.append(metrics.recall_score(y_test, y_pred))
 
-    print(f"average: {sum(scores) / trials}")
+    print(f"accuracy: {sum(accuracy_scores) / trials}")
+    print(f"f1: {sum(f1_scores) / trials}")
+    print(f"recall: {sum(recall_scores) / trials}")
+    print(f"precision: {sum(precision_scores) / trials}")
+
+    fig = plot_confusion_matrix(lr, x_test, y_test, display_labels=["loss", "win"])
+    fig.figure_.suptitle("Confusion Matrix")
+    # plt.show()
+    plt.savefig("../data/confusion_matrix_lr.pdf")
 
 
 def logitistic_regression_gridcv(data_file: str) -> None:

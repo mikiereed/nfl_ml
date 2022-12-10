@@ -1,0 +1,5 @@
+def print_scores(scores: list[list], trials: int) -> None:
+    accuracy_scores.append(metrics.accuracy_score(y_test, y_pred))
+        f1_scores.append(metrics.f1_score(y_test, y_pred))
+        precision_scores.append(metrics.precision_score(y_test, y_pred))
+        recall_scores
