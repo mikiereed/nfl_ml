@@ -38,6 +38,12 @@ def naive_bayes_model(data_file: str) -> None:
     print(f"recall: {sum(recall_scores) / trials}")
     print(f"precision: {sum(precision_scores) / trials}")
 
+    # prints
+    # accuracy: 0.7128048780487807
+    # f1: 0.7906316327026197
+    # recall: 0.9657798756080106
+    # precision: 0.6706755326278693
+
 
 if __name__ == "__main__":
     naive_bayes_model("../data/data.csv")

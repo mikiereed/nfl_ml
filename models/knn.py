@@ -45,8 +45,12 @@ def knn_model(data_file) -> None:
     x, y = load_csv(csv_path=data_file, label_col="y", add_intercept=False)
     change_zeros_to_mean(x)
 
-    scores = []
-    for i in range(20):
+    accuracy_scores = []
+    f1_scores = []
+    recall_scores = []
+    precision_scores = []
+    trials = 100
+    for i in range(trials):
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.20, random_state=i)
         scaler = StandardScaler()
         x_train = scaler.fit_transform(x_train)
@@ -55,11 +59,23 @@ def knn_model(data_file) -> None:
         knn = KNeighborsClassifier(n_neighbors=k)
         knn.fit(x_train, y_train)
         y_pred = knn.predict(x_test)
-        accuracy = metrics.accuracy_score(y_test, y_pred)
-        scores.append(accuracy)
-        print(f"{accuracy}")
+        accuracy_scores.append(metrics.accuracy_score(y_test, y_pred))
+        f1_scores.append(metrics.f1_score(y_test, y_pred))
+        precision_scores.append(metrics.precision_score(y_test, y_pred))
+        recall_scores.append(metrics.recall_score(y_test, y_pred))
+
+    print(f"accuracy: {sum(accuracy_scores) / trials}")
+    print(f"f1: {sum(f1_scores) / trials}")
+    print(f"recall: {sum(recall_scores) / trials}")
+    print(f"precision: {sum(precision_scores) / trials}")
+
+    # prints
+    # accuracy: 0.8006341463414632
+    # f1: 0.8315326232206606
+    # recall: 0.8801078187448284
+    # precision: 0.7884736098290235
 
 
 if __name__ == "__main__":
-    # knn_model_find_best_k("../data/data.csv")
+    knn_model_find_best_k("../data/data.csv")
     knn_model("../data/data.csv")

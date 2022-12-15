@@ -63,6 +63,11 @@ def change_zeros_to_mean(x: np.array):
 
 
 def normalize_features(x: np.array):
+    """
+    Use sklearn StandardScalar() instead of this!!!
+    :param x:
+    :return:
+    """
     for column in range(x.shape[1]):
         std_dev = np.std(x[:, column:column + 1])
         mean = np.mean(x[:, column:column + 1])

@@ -13,8 +13,8 @@ load_dotenv()
 
 BASE_URL = "https://premium.pff.com/nfl/games/"
 YEARS = [2022]
-WEEKS = [i for i in range(1, 14)]
-# WEEKS = [i for i in range(1, 2)]
+# WEEKS = [i for i in range(1, 18)]
+WEEKS = [i for i in range(1, 14)]  # 2022 season has had 13 weeks so far
 PFF_LOGGED_IN = False
 
 
